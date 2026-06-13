@@ -5,7 +5,7 @@ import {usePuterStore} from "~/lib/puter";
 import {useNavigate} from "react-router";
 import {convertPdfToImage} from "~/lib/pdf2img";
 import {generateUUID} from "~/lib/utils";
-import {prepareInstructions} from "../../constants";
+import {prepareInstructions} from "../constants";
 
 const Upload = () => {
     const { auth, isLoading, fs, ai, kv } = usePuterStore();
@@ -46,21 +46,71 @@ const Upload = () => {
 
         setStatusText('Analyzing...');
 
-        const feedback = await ai.feedback(
-            uploadedFile.path,
-            prepareInstructions({ jobTitle, jobDescription })
-        )
-        if (!feedback) return setStatusText('Error: Failed to analyze resume');
+        console.log("PDF Path:", uploadedFile.path);
+        console.log("Image Path:", uploadedImage.path);
+        console.log("Company:", companyName);
+        console.log("Job Title:", jobTitle);
+        console.log("Job Description:", jobDescription);
 
-        const feedbackText = typeof feedback.message.content === 'string'
-            ? feedback.message.content
-            : feedback.message.content[0].text;
+        try {
+            console.log(
+                "PROMPT:",
+                prepareInstructions({
+                    jobTitle,
+                    jobDescription
+                })
+            );
 
-        data.feedback = JSON.parse(feedbackText);
-        await kv.set(`resume:${uuid}`, JSON.stringify(data));
-        setStatusText('Analysis complete, redirecting...');
-        console.log(data);
-        navigate(`/resume/${uuid}`);
+            const feedback = await ai.feedback(
+                uploadedImage.path,
+                prepareInstructions({
+                    jobTitle,
+                    jobDescription
+                })
+            );
+
+            console.log("AI Response:", feedback);
+
+            if (!feedback) {
+                setStatusText('Error: Failed to analyze resume');
+                return;
+            }
+
+            const feedbackText =
+                typeof feedback.message.content === 'string'
+                    ? feedback.message.content
+                    : feedback.message.content[0].text;
+
+            console.log("Feedback Text:", feedbackText);
+
+            data.feedback = JSON.parse(feedbackText);
+
+            await kv.set(`resume:${uuid}`, JSON.stringify(data));
+
+            setStatusText('Analysis complete, redirecting...');
+
+            console.log(data);
+
+            navigate(`/resume/${uuid}`);
+
+        } catch (error: any) {
+
+            console.error("FULL AI ERROR:", error);
+
+            console.log("ERROR STRING:", JSON.stringify(error, null, 2));
+
+            console.log("ERROR MESSAGE:", error?.message);
+
+            console.log("ERROR DATA:", error?.data);
+
+            console.log("ERROR RESPONSE:", error?.response);
+
+            console.log("ERROR STATUS:", error?.status);
+
+            setStatusText('AI Analysis Failed');
+
+            return;
+        }
     }
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -73,9 +123,33 @@ const Upload = () => {
         const jobTitle = formData.get('job-title') as string;
         const jobDescription = formData.get('job-description') as string;
 
-        if(!file) return;
+        if (!companyName.trim()) {
+            alert("Please enter Company Name");
+            return;
+        }
 
-        handleAnalyze({ companyName, jobTitle, jobDescription, file });
+        if (!jobTitle.trim()) {
+            alert("Please enter Job Title");
+            return;
+        }
+
+        if (!jobDescription.trim()) {
+            alert("Please enter Job Description");
+            return;
+        }
+
+        if (!file) {
+            alert("Please upload a resume");
+            return;
+        }
+
+        handleAnalyze({
+            companyName,
+            jobTitle,
+            jobDescription,
+            file
+        });
+
     }
 
     return (

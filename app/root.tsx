@@ -8,9 +8,10 @@ import {
 } from "react-router";
 
 import { useEffect } from "react";
+import type { ReactNode } from "react";
 import type { Route } from "./+types/root";
+import { usePuterStore } from "~/lib/puter";
 import "./app.css";
-
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -24,7 +25,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: ReactNode }) {
   const { init } = usePuterStore();
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>AI Resume Analyzer</title>
         <Meta />
         <Links />
       </head>

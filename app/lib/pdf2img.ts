@@ -75,7 +75,11 @@ export async function convertPdfToImage(
                 1.0
             ); // Set quality to maximum (1.0)
         });
-    } catch (err) {
+    } catch (err: any) {
+        console.error("PDF Conversion Error:", err);
+        console.error("Error Name:", err?.name);
+        console.error("Error Message:", err?.message);
+
         return {
             imageUrl: "",
             file: null,

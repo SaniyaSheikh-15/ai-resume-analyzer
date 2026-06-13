@@ -9,6 +9,7 @@ interface Resume {
     id: string;
     companyName?: string;
     jobTitle?: string;
+    jobDescription?: string;
     imagePath: string;
     resumePath: string;
     feedback: Feedback;
@@ -55,4 +56,15 @@ interface Feedback {
             explanation: string;
         }[];
     };
+}
+
+interface InterviewQuestion {
+    question: string;
+    whyAsked: string;
+}
+
+interface InterviewQuestions {
+    technical: InterviewQuestion[];
+    behavioral: InterviewQuestion[];
+    roleSpecific: InterviewQuestion[];
 }

@@ -3,7 +3,7 @@ export const resumes: Resume[] = [
         id: "1",
         companyName: "Google",
         jobTitle: "Frontend Developer",
-        imagePath: "/images/resume_01.png",
+        imagePath: "images/resume_01.png",
         resumePath: "/resumes/resume-1.pdf",
         feedback: {
             overallScore: 85,
@@ -33,7 +33,7 @@ export const resumes: Resume[] = [
         id: "2",
         companyName: "Microsoft",
         jobTitle: "Cloud Engineer",
-        imagePath: "/images/resume_02.png",
+        imagePath: "images/resume_02.png",
         resumePath: "/resumes/resume-2.pdf",
         feedback: {
             overallScore: 55,
@@ -63,7 +63,7 @@ export const resumes: Resume[] = [
         id: "3",
         companyName: "Apple",
         jobTitle: "iOS Developer",
-        imagePath: "/images/resume_03.png",
+        imagePath: "images/resume_03.png",
         resumePath: "/resumes/resume-3.pdf",
         feedback: {
             overallScore: 75,
@@ -238,4 +238,23 @@ export const prepareInstructions = ({jobTitle, jobDescription}: { jobTitle: stri
       Provide the feedback using the following format:
       ${AIResponseFormat}
       Return the analysis as an JSON object, without any other text and without the backticks.
+      Do not include any other text or comments.`;
+
+export const InterviewResponseFormat = `
+  interface InterviewQuestions {
+    technical: { question: string; whyAsked: string }[]; // 4-5 questions
+    behavioral: { question: string; whyAsked: string }[]; // 4-5 questions
+    roleSpecific: { question: string; whyAsked: string }[]; // 3-4 questions
+  }`;
+
+export const prepareInterviewInstructions = ({ jobTitle, jobDescription }: { jobTitle: string; jobDescription: string }) =>
+    `You are an experienced technical interviewer and hiring manager.
+      Based on the attached resume and the job details below, generate likely interview questions for this candidate.
+      The job title is: ${jobTitle}
+      The job description is: ${jobDescription}
+      For each question, briefly explain why an interviewer would ask it, referencing something specific from the resume or job description.
+      Include a mix of technical questions (based on skills/projects in the resume), behavioral questions (STAR-style based on experience), and role-specific questions (based on the job description).
+      Provide the response using the following format:
+      ${InterviewResponseFormat}
+      Return the result as a JSON object, without any other text and without backticks.
       Do not include any other text or comments.`;
